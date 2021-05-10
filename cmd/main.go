@@ -21,6 +21,26 @@ const (
 	dbPort = uint16(6080)
 )
 
+const(
+	createTableRequest = `create table human_resources
+(
+	id serial not null,
+	name varchar(256),
+	dob date,
+	address varchar(256),
+	description varchar(512),
+	created_at date not null,
+	updated_at date
+);
+
+create unique index human_resources_id_uindex
+	on human_resources (id);
+
+alter table human_resources
+	add constraint table_name_pk
+		primary key (id);`
+)
+
 func main() {
 	ctx := context.Background()
 

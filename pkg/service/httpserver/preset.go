@@ -2,5 +2,6 @@ package httpserver
 
 // const for httpserver
 const (
-	URIPathGetAlive = "/alive"
+	URIPathGetAlive = "royce/alive"
+	URIPathNewUser = "royce/create/user"
 )
