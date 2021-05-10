@@ -14,21 +14,21 @@ import (
 const (
 	serverPort = "8080"
 
-	login = "postgres"
-	pass = "somepass"
-	name = "postgres"
-	host = "127.0.0.1"
+	login  = "postgres"
+	pass   = "somepass"
+	name   = "postgres"
+	host   = "127.0.0.1"
 	dbPort = uint16(6080)
 )
 
-const(
+const (
 	createTableRequest = `create table human_resources
 (
 	id serial not null,
-	name varchar(256),
+	name varchar(256) not null,
 	dob date,
-	address varchar(256),
-	description varchar(512),
+	address varchar(256) not null,
+	description varchar(512) not null,
 	created_at date not null,
 	updated_at date
 );
@@ -44,9 +44,9 @@ alter table human_resources
 func main() {
 	ctx := context.Background()
 
-	dbAdp, err := db.NewDbConnector(ctx, login, pass, host,name,dbPort)
-	if err != nil{
-		log.Fatalf("error while connecting to db: %v",err)
+	dbAdp, err := db.NewDbConnector(ctx, login, pass, host, name, dbPort)
+	if err != nil {
+		log.Fatalf("error while connecting to db: %v", err)
 	}
 
 	royce := royce_tech_app.NewRoyce(dbAdp)
@@ -56,5 +56,5 @@ func main() {
 	http.Handle("/", router)
 
 	log.Printf("server starting on port: %s", serverPort)
-	log.Fatal(http.ListenAndServe(":"+ serverPort, nil))
+	log.Fatal(http.ListenAndServe(":"+serverPort, nil))
 }

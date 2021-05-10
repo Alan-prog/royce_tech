@@ -7,11 +7,11 @@ import (
 
 func NewDbConnector(ctx context.Context, login, pass, host, name string, port uint16) (*pgx.Conn, error) {
 	conn, err := pgx.Connect(pgx.ConnConfig{
-		Host: host,
-		Port: port,
+		Host:     host,
+		Port:     port,
 		Database: name,
 		Password: pass,
-		User: login,
+		User:     login,
 	})
 	if err != nil {
 		return nil, err

@@ -17,7 +17,7 @@ func MakeRouter(handlerSettings []*HandlerSettings) *mux.Router {
 	router := mux.NewRouter()
 
 	for _, settings := range handlerSettings {
-		router.HandleFunc(settings.Path, settings.Handler).Methods(http.MethodGet)
+		router.HandleFunc(settings.Path, settings.Handler).Methods(settings.Method)
 	}
 
 	return router
