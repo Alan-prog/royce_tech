@@ -3,12 +3,11 @@ package main
 import (
 	"context"
 	"log"
-	"net/http"
-
 	"my_projects/royce_tech/pkg/royce_tech_app"
 	"my_projects/royce_tech/pkg/service"
 	"my_projects/royce_tech/pkg/service/httpserver"
 	"my_projects/royce_tech/tools/db"
+	"net/http"
 )
 
 const (
@@ -18,7 +17,7 @@ const (
 	pass   = "somepass"
 	name   = "postgres"
 	host   = "127.0.0.1"
-	dbPort = uint16(6080)
+	dbPort = uint16(5432)
 )
 
 const (
@@ -48,6 +47,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("error while connecting to db: %v", err)
 	}
+	defer dbAdp.Close()
 
 	royce := royce_tech_app.NewRoyce(dbAdp)
 	svc := service.NewService(royce)
