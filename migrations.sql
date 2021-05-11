@@ -6,7 +6,8 @@ create table human_resources
 	address varchar(256) not null,
 	description varchar(512) not null,
 	created_at date not null,
-	updated_at date
+	updated_at date,
+	visibility bool not null default true
 );
 
 create unique index human_resources_id_uindex
