@@ -3,7 +3,6 @@ package httpserver
 import (
 	"context"
 	"encoding/json"
-	"github.com/pkg/errors"
 	"my_projects/royce_tech/pkg/models"
 	"my_projects/royce_tech/tools"
 	"net/http"
@@ -15,30 +14,31 @@ import (
 // AliveTransport
 //================================================
 type AliveTransport interface {
-	DecodeRequest(ctx context.Context, r *http.Request) (err error)
-	EncodeResponse(ctx context.Context, w http.ResponseWriter, response *models.AliveResponse) (err error)
+	DecodeRequest(ctx context.Context, r *http.Request) (err tools.ErrorMessage)
+	EncodeResponse(ctx context.Context, w http.ResponseWriter, response *models.AliveResponse) (err tools.ErrorMessage)
 }
 
 type aliveTransport struct {
 }
 
 // DecodeRequest method for decoding requests on server side
-func (t *aliveTransport) DecodeRequest(ctx context.Context, r *http.Request) (err error) {
+func (t *aliveTransport) DecodeRequest(ctx context.Context, r *http.Request) (err tools.ErrorMessage) {
 	return
 }
 
 // EncodeResponse method for encoding response on server side
-func (t *aliveTransport) EncodeResponse(ctx context.Context, w http.ResponseWriter, response *models.AliveResponse) (err error) {
+func (t *aliveTransport) EncodeResponse(ctx context.Context, w http.ResponseWriter, response *models.AliveResponse) (err tools.ErrorMessage) {
 	w.Header().Set("Content-Type", "application/json")
-	byteResp, err := json.Marshal(response)
-	if err != nil {
-		err = errors.Wrap(err, "error while marshal Alive response")
+	byteResp, er := json.Marshal(response)
+	if er != nil {
+		err = tools.NewErrorMessage(err, "error while marshal Alive response", http.StatusInternalServerError)
 		return
 	}
 
-	_, err = w.Write(byteResp)
-	if err != nil {
-		tools.HandleHttpError(w, err)
+	_, er = w.Write(byteResp)
+	if er != nil {
+		err = tools.NewErrorMessage(err, "error while marshal Alive response", http.StatusInternalServerError)
+		return
 	}
 	return
 }
@@ -53,34 +53,35 @@ func NewAliveTransport() AliveTransport {
 // CreateUserTransport
 //================================================
 type CreateUserTransport interface {
-	DecodeRequest(ctx context.Context, r *http.Request) (response models.CreateUserRequest, err error)
-	EncodeResponse(ctx context.Context, w http.ResponseWriter, response *models.SingleUserData) (err error)
+	DecodeRequest(ctx context.Context, r *http.Request) (response models.CreateUserRequest, err tools.ErrorMessage)
+	EncodeResponse(ctx context.Context, w http.ResponseWriter, response *models.SingleUserData) (err tools.ErrorMessage)
 }
 
 type createUserTransport struct {
 }
 
 // DecodeRequest method for decoding requests on server side
-func (t *createUserTransport) DecodeRequest(ctx context.Context, r *http.Request) (response models.CreateUserRequest, err error) {
-	err = json.NewDecoder(r.Body).Decode(&response)
-	if err != nil {
-		err = errors.Wrap(err, "error while unmarshal CreateUser request")
+func (t *createUserTransport) DecodeRequest(ctx context.Context, r *http.Request) (response models.CreateUserRequest, err tools.ErrorMessage) {
+	er := json.NewDecoder(r.Body).Decode(&response)
+	if er != nil {
+		err = tools.NewErrorMessage(er, "Error while unmarshal CreateUser request", http.StatusInternalServerError)
 	}
 	return
 }
 
 // EncodeResponse method for encoding response on server side
-func (t *createUserTransport) EncodeResponse(ctx context.Context, w http.ResponseWriter, response *models.SingleUserData) (err error) {
+func (t *createUserTransport) EncodeResponse(ctx context.Context, w http.ResponseWriter, response *models.SingleUserData) (err tools.ErrorMessage) {
 	w.Header().Set("Content-Type", "application/json")
-	byteResp, err := json.Marshal(response)
-	if err != nil {
-		err = errors.Wrap(err, "error while marshal CreateUser response")
+	byteResp, er := json.Marshal(response)
+	if er != nil {
+		err = tools.NewErrorMessage(er, "Error while marshal CreateUser response", http.StatusInternalServerError)
 		return
 	}
 
-	_, err = w.Write(byteResp)
-	if err != nil {
-		err = errors.Wrap(err, "error while writing response to response writer in CreateUser")
+	_, er = w.Write(byteResp)
+	if er != nil {
+		err = tools.NewErrorMessage(er, "Error while writing response to response writer in CreateUser",
+			http.StatusInternalServerError)
 	}
 	return
 }
@@ -95,34 +96,36 @@ func NewCreateUserTransport() CreateUserTransport {
 // GetUserTransport
 //================================================
 type GetUserTransport interface {
-	DecodeRequest(ctx context.Context, r *http.Request) (id int, err error)
-	EncodeResponse(ctx context.Context, w http.ResponseWriter, response *models.SingleUserData) (err error)
+	DecodeRequest(ctx context.Context, r *http.Request) (id int, err tools.ErrorMessage)
+	EncodeResponse(ctx context.Context, w http.ResponseWriter, response *models.SingleUserData) (err tools.ErrorMessage)
 }
 
 type getUserTransport struct {
 }
 
 // DecodeRequest method for decoding requests on server side
-func (t *getUserTransport) DecodeRequest(ctx context.Context, r *http.Request) (id int, err error) {
-	id, err = strconv.Atoi(r.URL.Query().Get("id"))
-	if err != nil {
-		err = errors.Wrap(err, "error while parsing query in GetUser")
+func (t *getUserTransport) DecodeRequest(ctx context.Context, r *http.Request) (id int, err tools.ErrorMessage) {
+	id, er := strconv.Atoi(r.URL.Query().Get("id"))
+	if er != nil {
+		err = tools.NewErrorMessage(er, "Error while parsing query in GetUser", http.StatusInternalServerError)
 	}
 	return
 }
 
 // EncodeResponse method for encoding response on server side
-func (t *getUserTransport) EncodeResponse(ctx context.Context, w http.ResponseWriter, response *models.SingleUserData) (err error) {
+func (t *getUserTransport) EncodeResponse(ctx context.Context, w http.ResponseWriter, response *models.SingleUserData) (err tools.ErrorMessage) {
 	w.Header().Set("Content-Type", "application/json")
-	byteResp, err := json.Marshal(response)
-	if err != nil {
-		err = errors.Wrap(err, "error while marshal GetUser response")
+	byteResp, er := json.Marshal(response)
+	if er != nil {
+		err = tools.NewErrorMessage(er, "Error while marshal GetUser response",
+			http.StatusInternalServerError)
 		return
 	}
 
-	_, err = w.Write(byteResp)
-	if err != nil {
-		err = errors.Wrap(err, "error while writing response to response writer in GetUser")
+	_, er = w.Write(byteResp)
+	if er != nil {
+		err = tools.NewErrorMessage(er, "Error while writing response to response writer in GetUser",
+			http.StatusInternalServerError)
 	}
 	return
 }
@@ -137,24 +140,25 @@ func NewGetUserTransport() GetUserTransport {
 // DeleteUserTransport
 //================================================
 type DeleteUserTransport interface {
-	DecodeRequest(ctx context.Context, r *http.Request) (id int, err error)
-	EncodeResponse(ctx context.Context, w http.ResponseWriter) (err error)
+	DecodeRequest(ctx context.Context, r *http.Request) (id int, err tools.ErrorMessage)
+	EncodeResponse(ctx context.Context, w http.ResponseWriter) (err tools.ErrorMessage)
 }
 
 type deleteUserTransport struct {
 }
 
 // DecodeRequest method for decoding requests on server side
-func (t *deleteUserTransport) DecodeRequest(ctx context.Context, r *http.Request) (id int, err error) {
-	id, err = strconv.Atoi(r.URL.Query().Get("id"))
-	if err != nil {
-		err = errors.Wrap(err, "error while parsing query in DeleteUser")
+func (t *deleteUserTransport) DecodeRequest(ctx context.Context, r *http.Request) (id int, err tools.ErrorMessage) {
+	id, er := strconv.Atoi(r.URL.Query().Get("id"))
+	if er != nil {
+		err = tools.NewErrorMessage(er, "Error while parsing query in DeleteUser",
+			http.StatusInternalServerError)
 	}
 	return
 }
 
 // EncodeResponse method for encoding response on server side
-func (t *deleteUserTransport) EncodeResponse(ctx context.Context, w http.ResponseWriter) (err error) {
+func (t *deleteUserTransport) EncodeResponse(ctx context.Context, w http.ResponseWriter) (err tools.ErrorMessage) {
 	return
 }
 
@@ -168,34 +172,37 @@ func NewDeleteUserTransport() DeleteUserTransport {
 // UpdateUserTransport
 //================================================
 type UpdateUserTransport interface {
-	DecodeRequest(ctx context.Context, r *http.Request) (response models.UpdateUserData, err error)
-	EncodeResponse(ctx context.Context, w http.ResponseWriter, response *models.SingleUserData) (err error)
+	DecodeRequest(ctx context.Context, r *http.Request) (response models.UpdateUserData, err tools.ErrorMessage)
+	EncodeResponse(ctx context.Context, w http.ResponseWriter, response *models.SingleUserData) (err tools.ErrorMessage)
 }
 
 type updateUserTransport struct {
 }
 
 // DecodeRequest method for decoding requests on server side
-func (t *updateUserTransport) DecodeRequest(ctx context.Context, r *http.Request) (response models.UpdateUserData, err error) {
-	err = json.NewDecoder(r.Body).Decode(&response)
-	if err != nil {
-		err = errors.Wrap(err, "error while unmarshal CreateUser request")
+func (t *updateUserTransport) DecodeRequest(ctx context.Context, r *http.Request) (response models.UpdateUserData, err tools.ErrorMessage) {
+	er := json.NewDecoder(r.Body).Decode(&response)
+	if er != nil {
+		err = tools.NewErrorMessage(er, "Error while unmarshal CreateUser request",
+			http.StatusInternalServerError)
 	}
 	return
 }
 
 // EncodeResponse method for encoding response on server side
-func (t *updateUserTransport) EncodeResponse(ctx context.Context, w http.ResponseWriter, response *models.SingleUserData) (err error) {
+func (t *updateUserTransport) EncodeResponse(ctx context.Context, w http.ResponseWriter, response *models.SingleUserData) (err tools.ErrorMessage) {
 	w.Header().Set("Content-Type", "application/json")
-	byteResp, err := json.Marshal(response)
-	if err != nil {
-		err = errors.Wrap(err, "error while marshal UpdateUser response")
+	byteResp, er := json.Marshal(response)
+	if er != nil {
+		err = tools.NewErrorMessage(er, "Error while marshal UpdateUser response",
+			http.StatusInternalServerError)
 		return
 	}
 
-	_, err = w.Write(byteResp)
-	if err != nil {
-		err = errors.Wrap(err, "error while writing response to response writer in UpdateUser")
+	_, er = w.Write(byteResp)
+	if er != nil {
+		err = tools.NewErrorMessage(er, "Error while writing response to response writer in UpdateUser",
+			http.StatusInternalServerError)
 	}
 	return
 }
@@ -210,30 +217,32 @@ func NewUpdateUserTransport() UpdateUserTransport {
 // GetAllUserTransport
 //================================================
 type GetAllUserTransport interface {
-	DecodeRequest(ctx context.Context, r *http.Request) (err error)
-	EncodeResponse(ctx context.Context, w http.ResponseWriter, response models.AllUsersData) (err error)
+	DecodeRequest(ctx context.Context, r *http.Request) (err tools.ErrorMessage)
+	EncodeResponse(ctx context.Context, w http.ResponseWriter, response models.AllUsersData) (err tools.ErrorMessage)
 }
 
 type getAllUserTransport struct {
 }
 
 // DecodeRequest method for decoding requests on server side
-func (t *getAllUserTransport) DecodeRequest(ctx context.Context, r *http.Request) (err error) {
+func (t *getAllUserTransport) DecodeRequest(ctx context.Context, r *http.Request) (err tools.ErrorMessage) {
 	return
 }
 
 // EncodeResponse method for encoding response on server side
-func (t *getAllUserTransport) EncodeResponse(ctx context.Context, w http.ResponseWriter, response models.AllUsersData) (err error) {
+func (t *getAllUserTransport) EncodeResponse(ctx context.Context, w http.ResponseWriter, response models.AllUsersData) (err tools.ErrorMessage) {
 	w.Header().Set("Content-Type", "application/json")
-	byteResp, err := json.Marshal(response)
-	if err != nil {
-		err = errors.Wrap(err, "error while marshal GetAllUser response")
+	byteResp, er := json.Marshal(response)
+	if er != nil {
+		err = tools.NewErrorMessage(er, "Error while marshal GetAllUser response",
+			http.StatusInternalServerError)
 		return
 	}
 
-	_, err = w.Write(byteResp)
-	if err != nil {
-		err = errors.Wrap(err, "error while writing response to response writer in GetAllUser")
+	_, er = w.Write(byteResp)
+	if er != nil {
+		err = tools.NewErrorMessage(er, "Error while writing response to response writer in GetAllUser",
+			http.StatusInternalServerError)
 	}
 	return
 }

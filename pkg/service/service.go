@@ -3,36 +3,37 @@ package service
 import (
 	"context"
 	"my_projects/royce_tech/pkg/models"
+	"my_projects/royce_tech/tools"
 )
 
 type royce interface {
-	Alive() (output models.AliveResponse, err error)
-	CreateUser(ctx context.Context, input *models.CreateUserRequest) (output int, err error)
-	GetSingleUser(ctx context.Context, id int) (output models.SingleUserData, err error)
-	DeleteUser(ctx context.Context, id int) (err error)
-	UpdateUser(ctx context.Context, input *models.UpdateUserData) (err error)
-	GetAllUser(ctx context.Context) (output models.AllUsersData, err error)
+	Alive(ctx context.Context) (output models.AliveResponse, err tools.ErrorMessage)
+	CreateUser(ctx context.Context, input *models.CreateUserRequest) (output int, err tools.ErrorMessage)
+	GetSingleUser(ctx context.Context, id int) (output models.SingleUserData, err tools.ErrorMessage)
+	DeleteUser(ctx context.Context, id int) (err tools.ErrorMessage)
+	UpdateUser(ctx context.Context, input *models.UpdateUserData) (err tools.ErrorMessage)
+	GetAllUser(ctx context.Context) (output models.AllUsersData, err tools.ErrorMessage)
 }
 
 type Service interface {
-	Alive() (output models.AliveResponse, err error)
-	CreateUser(ctx context.Context, input *models.CreateUserRequest) (output models.SingleUserData, err error)
-	GetUser(ctx context.Context, input int) (output models.SingleUserData, err error)
-	DeleteUser(ctx context.Context, input int) (err error)
-	UpdateUser(ctx context.Context, input *models.UpdateUserData) (output models.SingleUserData, err error)
-	GetAllUser(ctx context.Context) (output models.AllUsersData, err error)
+	Alive(ctx context.Context) (output models.AliveResponse, err tools.ErrorMessage)
+	CreateUser(ctx context.Context, input *models.CreateUserRequest) (output models.SingleUserData, err tools.ErrorMessage)
+	GetUser(ctx context.Context, input int) (output models.SingleUserData, err tools.ErrorMessage)
+	DeleteUser(ctx context.Context, input int) (err tools.ErrorMessage)
+	UpdateUser(ctx context.Context, input *models.UpdateUserData) (output models.SingleUserData, err tools.ErrorMessage)
+	GetAllUser(ctx context.Context) (output models.AllUsersData, err tools.ErrorMessage)
 }
 
 type service struct {
 	royce royce
 }
 
-func (s *service) Alive() (output models.AliveResponse, err error) {
-	output, err = s.royce.Alive()
+func (s *service) Alive(ctx context.Context) (output models.AliveResponse, err tools.ErrorMessage) {
+	output, err = s.royce.Alive(ctx)
 	return
 }
 
-func (s *service) CreateUser(ctx context.Context, input *models.CreateUserRequest) (output models.SingleUserData, err error) {
+func (s *service) CreateUser(ctx context.Context, input *models.CreateUserRequest) (output models.SingleUserData, err tools.ErrorMessage) {
 	newUserId, err := s.royce.CreateUser(ctx, input)
 	if err != nil {
 		return
@@ -42,17 +43,17 @@ func (s *service) CreateUser(ctx context.Context, input *models.CreateUserReques
 	return
 }
 
-func (s *service) GetUser(ctx context.Context, input int) (output models.SingleUserData, err error) {
+func (s *service) GetUser(ctx context.Context, input int) (output models.SingleUserData, err tools.ErrorMessage) {
 	output, err = s.royce.GetSingleUser(ctx, input)
 	return
 }
 
-func (s *service) DeleteUser(ctx context.Context, id int) (err error) {
+func (s *service) DeleteUser(ctx context.Context, id int) (err tools.ErrorMessage) {
 	err = s.royce.DeleteUser(ctx, id)
 	return
 }
 
-func (s *service) UpdateUser(ctx context.Context, input *models.UpdateUserData) (response models.SingleUserData, err error) {
+func (s *service) UpdateUser(ctx context.Context, input *models.UpdateUserData) (response models.SingleUserData, err tools.ErrorMessage) {
 	err = s.royce.UpdateUser(ctx, input)
 	if err != nil {
 		return
@@ -62,7 +63,7 @@ func (s *service) UpdateUser(ctx context.Context, input *models.UpdateUserData) 
 	return
 }
 
-func (s *service) GetAllUser(ctx context.Context) (response models.AllUsersData, err error) {
+func (s *service) GetAllUser(ctx context.Context) (response models.AllUsersData, err tools.ErrorMessage) {
 	response, err = s.royce.GetAllUser(ctx)
 
 	return

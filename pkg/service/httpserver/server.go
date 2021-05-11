@@ -9,12 +9,12 @@ import (
 )
 
 type service interface {
-	Alive() (output models.AliveResponse, err error)
-	CreateUser(ctx context.Context, input *models.CreateUserRequest) (output models.SingleUserData, err error)
-	GetUser(ctx context.Context, input int) (output models.SingleUserData, err error)
-	DeleteUser(ctx context.Context, input int) (err error)
-	UpdateUser(ctx context.Context, input *models.UpdateUserData) (output models.SingleUserData, err error)
-	GetAllUser(ctx context.Context) (output models.AllUsersData, err error)
+	Alive(ctx context.Context) (output models.AliveResponse, err tools.ErrorMessage)
+	CreateUser(ctx context.Context, input *models.CreateUserRequest) (output models.SingleUserData, err tools.ErrorMessage)
+	GetUser(ctx context.Context, input int) (output models.SingleUserData, err tools.ErrorMessage)
+	DeleteUser(ctx context.Context, input int) (err tools.ErrorMessage)
+	UpdateUser(ctx context.Context, input *models.UpdateUserData) (output models.SingleUserData, err tools.ErrorMessage)
+	GetAllUser(ctx context.Context) (output models.AllUsersData, err tools.ErrorMessage)
 }
 
 //================================================
@@ -29,18 +29,18 @@ type aliveServer struct {
 func (s *aliveServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	err := s.transport.DecodeRequest(r.Context(), r)
 	if err != nil {
-		tools.HandleHttpError(w, err)
+		tools.EncodeIntoResponseWriter(w, err)
 		return
 	}
 
-	response, err := s.service.Alive()
+	response, err := s.service.Alive(r.Context())
 	if err != nil {
-		tools.HandleHttpError(w, err)
+		tools.EncodeIntoResponseWriter(w, err)
 		return
 	}
 
 	if err := s.transport.EncodeResponse(r.Context(), w, &response); err != nil {
-		tools.HandleHttpError(w, err)
+		tools.EncodeIntoResponseWriter(w, err)
 		return
 	}
 }
@@ -66,18 +66,18 @@ type createUserServer struct {
 func (s *createUserServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	req, err := s.transport.DecodeRequest(r.Context(), r)
 	if err != nil {
-		tools.HandleHttpError(w, err)
+		tools.EncodeIntoResponseWriter(w, err)
 		return
 	}
 
 	response, err := s.service.CreateUser(r.Context(), &req)
 	if err != nil {
-		tools.HandleHttpError(w, err)
+		tools.EncodeIntoResponseWriter(w, err)
 		return
 	}
 
 	if err := s.transport.EncodeResponse(r.Context(), w, &response); err != nil {
-		tools.HandleHttpError(w, err)
+		tools.EncodeIntoResponseWriter(w, err)
 		return
 	}
 }
@@ -101,20 +101,21 @@ type getUserServer struct {
 
 // ServeHTTP implements http.Handler.
 func (s *getUserServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	const srvName = "GetUser"
 	id, err := s.transport.DecodeRequest(r.Context(), r)
 	if err != nil {
-		tools.HandleHttpError(w, err)
+		tools.EncodeIntoResponseWriter(w, err)
 		return
 	}
 
 	response, err := s.service.GetUser(r.Context(), id)
 	if err != nil {
-		tools.HandleHttpError(w, err)
+		tools.EncodeIntoResponseWriter(w, err)
 		return
 	}
 
 	if err := s.transport.EncodeResponse(r.Context(), w, &response); err != nil {
-		tools.HandleHttpError(w, err)
+		tools.EncodeIntoResponseWriter(w, err)
 		return
 	}
 }
@@ -140,18 +141,18 @@ type deleteUserServer struct {
 func (s *deleteUserServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	id, err := s.transport.DecodeRequest(r.Context(), r)
 	if err != nil {
-		tools.HandleHttpError(w, err)
+		tools.EncodeIntoResponseWriter(w, err)
 		return
 	}
 
 	err = s.service.DeleteUser(r.Context(), id)
 	if err != nil {
-		tools.HandleHttpError(w, err)
+		tools.EncodeIntoResponseWriter(w, err)
 		return
 	}
 
 	if err := s.transport.EncodeResponse(r.Context(), w); err != nil {
-		tools.HandleHttpError(w, err)
+		tools.EncodeIntoResponseWriter(w, err)
 		return
 	}
 }
@@ -177,18 +178,18 @@ type updateUserServer struct {
 func (s *updateUserServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	req, err := s.transport.DecodeRequest(r.Context(), r)
 	if err != nil {
-		tools.HandleHttpError(w, err)
+		tools.EncodeIntoResponseWriter(w, err)
 		return
 	}
 
 	response, err := s.service.UpdateUser(r.Context(), &req)
 	if err != nil {
-		tools.HandleHttpError(w, err)
+		tools.EncodeIntoResponseWriter(w, err)
 		return
 	}
 
 	if err := s.transport.EncodeResponse(r.Context(), w, &response); err != nil {
-		tools.HandleHttpError(w, err)
+		tools.EncodeIntoResponseWriter(w, err)
 		return
 	}
 }
@@ -214,18 +215,18 @@ type getAllUserServer struct {
 func (s *getAllUserServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	err := s.transport.DecodeRequest(r.Context(), r)
 	if err != nil {
-		tools.HandleHttpError(w, err)
+		tools.EncodeIntoResponseWriter(w, err)
 		return
 	}
 
 	response, err := s.service.GetAllUser(r.Context())
 	if err != nil {
-		tools.HandleHttpError(w, err)
+		tools.EncodeIntoResponseWriter(w, err)
 		return
 	}
 
 	if err := s.transport.EncodeResponse(r.Context(), w, response); err != nil {
-		tools.HandleHttpError(w, err)
+		tools.EncodeIntoResponseWriter(w, err)
 		return
 	}
 }

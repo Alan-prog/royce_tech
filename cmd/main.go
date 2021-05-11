@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"my_projects/royce_tech/pkg/models"
 	"my_projects/royce_tech/pkg/royce_tech_app"
 	"my_projects/royce_tech/pkg/service"
 	"my_projects/royce_tech/pkg/service/httpserver"
@@ -32,9 +33,27 @@ func main() {
 	royce := royce_tech_app.NewRoyce(dbAdp)
 	svc := service.NewService(royce)
 	router := httpserver.NewPreparedServer(svc)
-
 	http.Handle("/", router)
 
 	log.Printf("server starting on port: %s", serverPort)
 	log.Fatal(http.ListenAndServe(":"+serverPort, nil))
+}
+
+func generateValidCreateUserRequest() (response models.CreateUserRequest) {
+	name := "Alan"
+	description := "golang developer"
+	return models.CreateUserRequest{
+		Name:        &name,
+		Description: &description,
+	}
+}
+
+func generateValidCreateUserResponse() (response models.SingleUserData) {
+	name := "Alan"
+	description := "golang developer"
+	return models.SingleUserData{
+		Name:        name,
+		Description: description,
+		CreateAt:    "2009-01-05",
+	}
 }
