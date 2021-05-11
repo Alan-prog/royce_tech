@@ -14,6 +14,7 @@ COPY ./cmd ./cmd
 COPY ./pkg ./pkg
 COPY ./tools ./tools
 COPY ./vendor ./vendor
+RUN go test ./...
 RUN mkdir bin
 RUN go build  -o bin/royce cmd/main.go
 

@@ -5,4 +5,5 @@ const (
 	HTTP              = "http://"
 	URIPathAlive      = "/royce/alive"
 	URIPathCreateUser = "/royce/create/user"
+	URIPathUserCommon = "/royce/user"
 )

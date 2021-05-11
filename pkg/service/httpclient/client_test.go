@@ -2,11 +2,13 @@ package httpclient
 
 import (
 	"context"
+	"errors"
 	"github.com/stretchr/testify/assert"
 	"log"
 	"my_projects/royce_tech/pkg/models"
 	"my_projects/royce_tech/pkg/service"
 	"my_projects/royce_tech/pkg/service/httpserver"
+	"my_projects/royce_tech/tools"
 	"net/http"
 	"testing"
 	"time"
@@ -17,14 +19,18 @@ const (
 	port                     = "8080"
 	serverLaunchingWaitSleep = 1 * time.Second
 
-	testAlive         = "testing of the Alive method"
-	testCreateUser    = "testing if the CreateUser method"
-	serviceAlive      = "Alive"
-	serviceCreateUser = "CreateUser"
+	testAlive            = "testing of the Alive method"
+	testCreateUser       = "testing if the CreateUser method"
+	testGetSingleUser    = "testing if the GetSingleUser method"
+	testDeleteUser       = "testing if the DeleteUser method"
+	serviceAlive         = "Alive"
+	serviceCreateUser    = "CreateUser"
+	serviceGetSingleUser = "GetUser"
+	serviceDeleteUser    = "DeleteUser"
 )
 
 var (
-	nilError error
+	nilError tools.ErrorMessage
 )
 
 //==============================
@@ -49,7 +55,7 @@ func TestClient_Alive(t *testing.T) {
 //==============================
 func TestClient_CreateUser(t *testing.T) {
 	request := generateValidCreateUserRequest()
-	response := generateValidCreateUserResponse()
+	response := generateValidCreateUserData()
 	t.Run(testCreateUser, func(t *testing.T) {
 		serviceMock := new(service.MockService)
 		serviceMock.On(serviceCreateUser, context.Background(), &request).Return(response, nilError)
@@ -61,24 +67,47 @@ func TestClient_CreateUser(t *testing.T) {
 		assert.NoError(t, err, "unexpected error:", err)
 	})
 
-	//internalError := error.NewError(500,"internal error")
-	//request = generateInvalidRequest()
-	//response = generateInvalidResponse()
-	//t.Run(testGetOrders, func(t *testing.T) {
-	//	serviceMock := new(dataService.MockService)
-	//	serviceMock.On(serviceGetOrders, context.Background(), &request).
-	//		Return(response,internalError)
-	//	server, client := makeServerClient(cfgPort, serviceMock)
-	//	defer func() {
-	//		err := server.Shutdown()
-	//		if err != nil {
-	//			log.Printf("server shut down err: %v", err)
-	//		}
-	//	}()
-	//	time.Sleep(serverLaunchingWaitSleep)
-	//	_, err := client.GetOrders(context.Background(), &request)
-	//	assert.Equal(t, err, internalError)
-	//})
+	internalError := tools.NewErrorMessage(errors.New("some error"), "Some human readable", http.StatusInternalServerError)
+	t.Run(testCreateUser, func(t *testing.T) {
+		serviceMock := new(service.MockService)
+		serviceMock.On(serviceCreateUser, context.Background(), &request).Return(response, internalError)
+		server, client := makeClientAndLaunchServer(address, port, serviceMock)
+		defer server.Close()
+
+		time.Sleep(serverLaunchingWaitSleep)
+		_, err := client.CreateUser(context.Background(), &request)
+		assert.Equal(t, err, internalError)
+	})
+}
+
+//==============================
+//TESTING GetSingleUser METHOD
+//==============================
+func TestClient_GetSingleUser(t *testing.T) {
+	request := 5
+	response := generateValidCreateUserData()
+	t.Run(testGetSingleUser, func(t *testing.T) {
+		serviceMock := new(service.MockService)
+		serviceMock.On(serviceGetSingleUser, context.Background(), request).Return(response, nilError)
+		server, client := makeClientAndLaunchServer(address, port, serviceMock)
+		defer server.Close()
+		time.Sleep(serverLaunchingWaitSleep)
+		answer, err := client.GetSingleUser(context.Background(), request)
+		assert.Equal(t, answer, response, "Valid testing")
+		assert.NoError(t, err, "unexpected error:", err)
+	})
+
+	internalError := tools.NewErrorMessage(errors.New("some error"), "Some human readable", http.StatusInternalServerError)
+	t.Run(testGetSingleUser, func(t *testing.T) {
+		serviceMock := new(service.MockService)
+		serviceMock.On(serviceGetSingleUser, context.Background(), request).Return(response, internalError)
+		server, client := makeClientAndLaunchServer(address, port, serviceMock)
+		defer server.Close()
+
+		time.Sleep(serverLaunchingWaitSleep)
+		_, err := client.GetSingleUser(context.Background(), request)
+		assert.Equal(t, err, internalError)
+	})
 }
 
 func generateValidAliveResponse() (response models.AliveResponse) {
@@ -95,7 +124,7 @@ func generateValidCreateUserRequest() (response models.CreateUserRequest) {
 	}
 }
 
-func generateValidCreateUserResponse() (response models.SingleUserData) {
+func generateValidCreateUserData() (response models.SingleUserData) {
 	name := "Alan"
 	description := "golang developer"
 	return models.SingleUserData{

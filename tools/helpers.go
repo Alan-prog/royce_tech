@@ -6,11 +6,6 @@ import (
 	"net/http"
 )
 
-func HandleHttpError(w http.ResponseWriter, err error) {
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(err.Error())
-}
-
 type ErrorMessage interface {
 	Error() string
 	GetCode() int
@@ -63,10 +58,13 @@ func NewErrorMessageEncodeIntoWriter(err error, humanReadable string, code int) 
 	}
 }
 
-func DecodeNewErrorMessage(resp http.Response) ErrorMessage {
+func DecodeNewErrorMessage(resp *http.Response) ErrorMessage {
+	if resp == nil {
+		return nil
+	}
 	var response errorMessage
 	if resp.StatusCode != 200 {
-		err := json.NewDecoder(resp.Body).Decode(response)
+		err := json.NewDecoder(resp.Body).Decode(&response)
 		if err != nil {
 			buf := new(bytes.Buffer)
 			buf.ReadFrom(resp.Body)

@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/stretchr/testify/mock"
 	"my_projects/royce_tech/pkg/models"
+	"my_projects/royce_tech/tools"
 )
 
 // MockService ...
@@ -12,32 +13,52 @@ type MockService struct {
 }
 
 // Alive ...
-func (m *MockService) Alive(ctx context.Context) (output models.AliveResponse, err error) {
+func (m *MockService) Alive(ctx context.Context) (output models.AliveResponse, err tools.ErrorMessage) {
 	output.Text = "service is okay"
 	return
 }
 
 // CreateUser ...
-func (m *MockService) CreateUser(ctx context.Context, input *models.CreateUserRequest) (output models.SingleUserData, err error) {
+func (m *MockService) CreateUser(ctx context.Context, input *models.CreateUserRequest) (output models.SingleUserData, err tools.ErrorMessage) {
 	args := m.Called(context.Background(), input)
 	if a, ok := args.Get(0).(models.SingleUserData); ok {
-		return a, args.Error(1)
+		if args.Get(1) == nil {
+			return a, nil
+		} else {
+			return output, args.Get(1).(tools.ErrorMessage)
+		}
 	}
-	return output, args.Error(1)
+	return output, args.Get(1).(tools.ErrorMessage)
 }
 
-func (m *MockService) GetUser(ctx context.Context, input int) (output models.SingleUserData, err error) {
+func (m *MockService) GetUser(ctx context.Context, input int) (output models.SingleUserData, err tools.ErrorMessage) {
+	args := m.Called(context.Background(), input)
+	if a, ok := args.Get(0).(models.SingleUserData); ok {
+		if args.Get(1) == nil {
+			return a, nil
+		} else {
+			return output, args.Get(1).(tools.ErrorMessage)
+		}
+	}
+	return output, args.Get(1).(tools.ErrorMessage)
+}
+
+func (m *MockService) DeleteUser(ctx context.Context, input int) (err tools.ErrorMessage) {
+	args := m.Called(context.Background(), input)
+	if _, ok := args.Get(0).(models.SingleUserData); ok {
+		if args.Get(1) == nil {
+			return nil
+		} else {
+			return args.Get(1).(tools.ErrorMessage)
+		}
+	}
+	return args.Get(1).(tools.ErrorMessage)
+}
+
+func (m *MockService) UpdateUser(ctx context.Context, input *models.UpdateUserData) (output models.SingleUserData, err tools.ErrorMessage) {
 	return
 }
 
-func (m *MockService) DeleteUser(ctx context.Context, input int) (err error) {
-	return
-}
-
-func (m *MockService) UpdateUser(ctx context.Context, input *models.UpdateUserData) (output models.SingleUserData, err error) {
-	return
-}
-
-func (m *MockService) GetAllUser(ctx context.Context) (output models.AllUsersData, err error) {
+func (m *MockService) GetAllUser(ctx context.Context) (output models.AllUsersData, err tools.ErrorMessage) {
 	return
 }
