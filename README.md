@@ -3,12 +3,12 @@
 Application for managing users in royce tech
 
 ### Getting Started 
-#### To build the applications run:
+#### To build this applications run:
 ```
 $ make build
 ```
 this will make docker image with postgres and application inside it
-####To run the applications run:
+#### To run this application run:
 ```
 $ make run 
 ```
