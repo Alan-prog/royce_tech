@@ -3,7 +3,7 @@
 Application for managing users in royce tech
 
 ### Getting Started 
-####To build the applications run:
+#### To build the applications run:
 ```
 $ make build
 ```
