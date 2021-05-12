@@ -49,6 +49,27 @@ paths:
           description: "Bad date format"
           schema:
             $ref: "#/definitions/ErrMessage"
+  /royce/user/all:
+    get:
+      tags:
+        - "GetAllUser"
+      summary: "Getting all users from the store"
+      description: ""
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        "200":
+          description: "Getting was successfull"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/SingleUser"
+        "500":
+          description: "Server error"
+          schema:
+            $ref: "#/definitions/ErrMessage"
   /royce/user:
     put:
       tags:
@@ -82,192 +103,85 @@ paths:
       description: ""
       produces:
         - "application/json"
+      parameters:
+        - name: "id"
+          in: "query"
+          type: "integer"
+          required: true
+          description: "id of the person need to get"
       responses:
         "200":
-          description: "successful operation"
+          description: "OK"
           schema:
-            $ref: "#/definitions/AliveResponse"
+            $ref: "#/definitions/SingleUser"
+        "400":
+          description: "No user in store with such id"
+          schema:
+            $ref: "#/definitions/ErrMessage"
+    delete:
+      tags:
+        - "DeleteUserData"
+      summary: "Delete user data by user id"
+      description: ""
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "query"
+          type: "integer"
+          required: true
+          description: "id of the person need to delete"
+      responses:
+        "200":
+          description: "OK"
         "500":
-          description: "Service is unavailable"
-
-    # delete:
-    #   tags:
-    #   - "pet"
-    #   summary: "Deletes a pet"
-    #   description: ""
-    #   operationId: "deletePet"
-    #   produces:
-    #   - "application/xml"
-    #   - "application/json"
-    #   parameters:
-    #   - name: "api_key"
-    #     in: "header"
-    #     required: false
-    #     type: "string"
-    #   - name: "petId"
-    #     in: "path"
-    #     description: "Pet id to delete"
-    #     required: true
-    #     type: "integer"
-    #     format: "int64"
-    #   responses:
-    #     "400":
-    #       description: "Invalid ID supplied"
-    #     "404":
-    #       description: "Pet not found"
-
-
+          description: "Server error"
+          schema:
+            $ref: "#/definitions/ErrMessage"
 
 definitions:
-  Order:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      petId:
-        type: "integer"
-        format: "int64"
-      quantity:
-        type: "integer"
-        format: "int32"
-      shipDate:
-        type: "string"
-        format: "date-time"
-      status:
-        type: "string"
-        description: "Order Status"
-        enum:
-          - "placed"
-          - "approved"
-          - "delivered"
-      complete:
-        type: "boolean"
-        default: false
-    xml:
-      name: "Order"
-  Category:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      name:
-        type: "string"
-    xml:
-      name: "Category"
-  User:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      username:
-        type: "string"
-      firstName:
-        type: "string"
-      lastName:
-        type: "string"
-      email:
-        type: "string"
-      password:
-        type: "string"
-      phone:
-        type: "string"
-      userStatus:
-        type: "integer"
-        format: "int32"
-        description: "User Status"
-    xml:
-      name: "User"
-  Tag:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      name:
-        type: "string"
-    xml:
-      name: "Tag"
-  Pet:
-    type: "object"
-    required:
-      - "name"
-      - "photoUrls"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      category:
-        $ref: "#/definitions/Category"
-      name:
-        type: "string"
-        example: "doggie"
-      photoUrls:
-        type: "array"
-        xml:
-          name: "photoUrl"
-          wrapped: true
-        items:
-          type: "string"
-      tags:
-        type: "array"
-        xml:
-          name: "tag"
-          wrapped: true
-        items:
-          $ref: "#/definitions/Tag"
-      status:
-        type: "string"
-        description: "pet status in the store"
-        enum:
-          - "available"
-          - "pending"
-          - "sold"
-    xml:
-      name: "Pet"
-  ApiResponse:
-    type: "object"
-    properties:
-      code:
-        type: "integer"
-        format: "int32"
-      type:
-        type: "string"
-      message:
-        type: "string"
   AliveResponse:
     type: "object"
     properties:
       text:
         type: "string"
+        example: "service is okay"
         description: "pet status in the store"
   CreateUserRequest:
     type: "object"
     properties:
       name:
         type: "string"
+        example: "Alan Kochiev"
+        description: "Some"
       dob:
         type: "string"
+        example: "2000-01-25"
       address:
         type: "string"
+        example: "Steet Name"
       description:
         type: "string"
+        example: "Some description"
   SingleUser:
     type: "object"
     properties:
       id:
         type: "integer"
         format: "int32"
+        example: "3"
       name:
         type: "string"
+        example: "Alan Kochiev"
       dob:
         type: "string"
+        example: "2000-01-25"
       address:
         type: "string"
+        example: "Steet Name"
       description:
         type: "string"
+        example: "Some description"
       createAt:
         type: "string"
       updatedAt:
@@ -282,29 +196,22 @@ definitions:
       code:
         type: "integer"
         format: "int32"
-
-  # {
-  # 	"id":1,
-  # 	"name":"Anna",
-  # 	"dob":"1998-08-10",
-  # 	"address":"Novocherkasskaya 47k2",
-  # 	"description":"Bad girl"
-  # }
   UpdateRequest:
     type: "object"
     properties:
       id:
         type: "integer"
         format: "int32"
+        example: "3"
       name:
         type: "string"
+        example: "Alan Kochiev"
       dob:
         type: "string"
+        example: "2000-01-25"
       address:
         type: "string"
+        example: "Steet Name"
       description:
         type: "string"
-
-externalDocs:
-  description: "Find out more about Swagger"
-  url: "http://swagger.io"
+        example: "Some description"

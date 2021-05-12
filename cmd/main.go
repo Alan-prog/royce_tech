@@ -32,7 +32,6 @@ func main() {
 	royce := royce_tech_app.NewRoyce(dbAdp)
 	svc := service.NewService(royce)
 	router := httpserver.NewPreparedServer(svc)
-	router.Methods("GET", "OPTIONS", "POST", "DELETE", "PUT")
 	http.Handle("/", router)
 
 	log.Printf("server starting on port: %s", serverPort)
