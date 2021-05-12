@@ -1,5 +1,8 @@
 # Royce Tech
-
+#### server address 
+```
+46.148.227.164:8080
+```
 Application for managing users in royce tech
 
 ### Getting Started 
