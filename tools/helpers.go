@@ -13,9 +13,9 @@ type ErrorMessage interface {
 }
 
 type errorMessage struct {
-	Err       string
-	HumanText string
-	Code      int
+	Err       string `json:"err"`
+	HumanText string `json:"humanText"`
+	Code      int    `json:"code"`
 }
 
 func (e *errorMessage) Error() string {
