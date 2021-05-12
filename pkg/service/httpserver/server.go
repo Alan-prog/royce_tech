@@ -27,6 +27,7 @@ type aliveServer struct {
 
 // ServeHTTP implements http.Handler.
 func (s *aliveServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	err := s.transport.DecodeRequest(r.Context(), r)
 	if err != nil {
 		tools.EncodeIntoResponseWriter(w, err)
@@ -64,6 +65,7 @@ type createUserServer struct {
 
 // ServeHTTP implements http.Handler.
 func (s *createUserServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	req, err := s.transport.DecodeRequest(r.Context(), r)
 	if err != nil {
 		tools.EncodeIntoResponseWriter(w, err)
@@ -101,6 +103,7 @@ type getUserServer struct {
 
 // ServeHTTP implements http.Handler.
 func (s *getUserServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	const srvName = "GetUser"
 	id, err := s.transport.DecodeRequest(r.Context(), r)
 	if err != nil {
@@ -139,6 +142,7 @@ type deleteUserServer struct {
 
 // ServeHTTP implements http.Handler.
 func (s *deleteUserServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	id, err := s.transport.DecodeRequest(r.Context(), r)
 	if err != nil {
 		tools.EncodeIntoResponseWriter(w, err)
@@ -176,6 +180,7 @@ type updateUserServer struct {
 
 // ServeHTTP implements http.Handler.
 func (s *updateUserServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	req, err := s.transport.DecodeRequest(r.Context(), r)
 	if err != nil {
 		tools.EncodeIntoResponseWriter(w, err)
@@ -213,6 +218,7 @@ type getAllUserServer struct {
 
 // ServeHTTP implements http.Handler.
 func (s *getAllUserServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	err := s.transport.DecodeRequest(r.Context(), r)
 	if err != nil {
 		tools.EncodeIntoResponseWriter(w, err)

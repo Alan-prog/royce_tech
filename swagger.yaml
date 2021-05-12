@@ -4,12 +4,6 @@ info:
   version: "1.0.0"
   title: "Swagger Royce Tech"
 host: "46.148.227.164:8080"
-tags:
-  - name: "Royce Tech"
-    description: "Api for managing users"
-    externalDocs:
-      description: "Find out more"
-      url: "http://swagger.io"
 schemes:
   - "http"
 paths:
@@ -38,7 +32,7 @@ paths:
       consumes:
         - "application/json"
       produces:
-        - "application/xml"
+        - "application/json"
       parameters:
         - in: "body"
           name: "body"
@@ -47,35 +41,54 @@ paths:
           schema:
             $ref: "#/definitions/CreateUserRequest"
       responses:
-        "500":
-          description: "Invalid input"
+        "200":
+          description: "Adding was successfull"
+          schema:
+            $ref: "#/definitions/SingleUser"
+        "400":
+          description: "Bad date format"
+          schema:
+            $ref: "#/definitions/ErrMessage"
+  /royce/user:
     put:
       tags:
-        - "pet"
+        - "UpdateUserData"
       summary: "Update an existing pet"
       description: ""
-      operationId: "updatePet"
       consumes:
         - "application/json"
-        - "application/xml"
       produces:
-        - "application/xml"
         - "application/json"
       parameters:
         - in: "body"
           name: "body"
-          description: "Pet object that needs to be added to the store"
+          description: "Fields that should be changed"
           required: true
           schema:
-            $ref: "#/definitions/Pet"
+            $ref: "#/definitions/UpdateRequest"
       responses:
+        "200":
+          description: "Updating was successfull"
+          schema:
+            $ref: "#/definitions/SingleUser"
         "400":
-          description: "Invalid ID supplied"
-        "404":
-          description: "Pet not found"
-        "405":
-          description: "Validation exception"
-
+          description: "Bad date format"
+          schema:
+            $ref: "#/definitions/ErrMessage"
+    get:
+      tags:
+        - "GetUserData"
+      summary: "Get single user data by user id"
+      description: ""
+      produces:
+        - "application/json"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/AliveResponse"
+        "500":
+          description: "Service is unavailable"
 
     # delete:
     #   tags:
@@ -227,15 +240,9 @@ definitions:
   AliveResponse:
     type: "object"
     properties:
-      Text:
+      text:
         type: "string"
         description: "pet status in the store"
-  # {
-  # 	"name":"Ann",
-  # 	"dob":"1998-08-10",
-  # 	"address":"Novocherkasskaya 47k2",
-  # 	"description":"bad girl"
-  # }
   CreateUserRequest:
     type: "object"
     properties:
@@ -245,6 +252,59 @@ definitions:
         type: "string"
       address:
         type: "string"
+      description:
+        type: "string"
+  SingleUser:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int32"
+      name:
+        type: "string"
+      dob:
+        type: "string"
+      address:
+        type: "string"
+      description:
+        type: "string"
+      createAt:
+        type: "string"
+      updatedAt:
+        type: "string"
+  ErrMessage:
+    type: "object"
+    properties:
+      err:
+        type: "string"
+      humanText:
+        type: "string"
+      code:
+        type: "integer"
+        format: "int32"
+
+  # {
+  # 	"id":1,
+  # 	"name":"Anna",
+  # 	"dob":"1998-08-10",
+  # 	"address":"Novocherkasskaya 47k2",
+  # 	"description":"Bad girl"
+  # }
+  UpdateRequest:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int32"
+      name:
+        type: "string"
+      dob:
+        type: "string"
+      address:
+        type: "string"
+      description:
+        type: "string"
+
 externalDocs:
   description: "Find out more about Swagger"
   url: "http://swagger.io"
