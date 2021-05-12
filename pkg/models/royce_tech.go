@@ -7,7 +7,7 @@ const (
 )
 
 type AliveResponse struct {
-	Text string
+	Text string `json:"text"`
 }
 
 type CreateUserRequest struct {
@@ -28,13 +28,13 @@ type SingleUserDataDbResponse struct {
 }
 
 type SingleUserData struct {
-	ID          int
-	Name        string
-	DOB         *string
-	Address     string
-	Description string
-	CreateAt    string
-	UpdatedAt   *string
+	ID          int     `json:"id"`
+	Name        string  `json:"name"`
+	DOB         *string `json:"dob"`
+	Address     string  `json:"address"`
+	Description string  `json:"description"`
+	CreateAt    string  `json:"createAt"`
+	UpdatedAt   *string `json:"updatedAt"`
 }
 
 type AllUsersData []*SingleUserData
